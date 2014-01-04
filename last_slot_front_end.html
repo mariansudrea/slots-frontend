@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<style>
+#info,#info2,#info3
+{
+visibility:hidden;
+}
+input,button
+{
+border-radius:5px;
+}
+#login
+{
+font-family: comic sans MS;
+padding:15px;
+font-size:0.9em;
+position:absolute;
+background-color:green;
+border:solid 1px black;
+border-radius:20px;
+left:50px;
+top:10px;
+width:180px;
+height:350px;
+text-align:right;
+}
+#APP
+{
+width:500px;
+height:300px;
+background-color:#123456;
+position:absolute;
+top:100px;
+visibility:hidden;
+}
+#result
+{
+color:#0006c2;
+}
+/* SLOTS STYLE */
+#container
+{
+position:absolute;
+padding:10px;
+border-top-left-radius:15px;
+border-top-right-radius:15px;
+border: 3px solid black;
+left: 300px;
+top: 10px;
+width:900px;
+height:600px;
+background-color:green;
+}
+#status
+{position:absolute;
+background-color:pink;
+padding: 10px;
+top: 630px;
+border: 3px solid black;
+left: 300px;
+height: 10px;
+width: 900px;
+}
+.controlButton
+{
+text-align:center;
+font-weight:bold;
+position:relative;
+height:100%;
+width:16.6%;
+float:left;
+background-color:pink;
+}
+#controls
+{position:absolute;
+background-color:blue;
+padding: 10px;
+top: 664px;
+border: 3px solid black;
+border-bottom-left-radius:15px;
+border-bottom-right-radius:15px;
+
+left: 300px;
+height: 30px;
+width: 900px;
+}
+/*
+#info
+{
+position:absolute;
+left:920px;
+top:20px;
+width:100px;
+height:100px;
+background-color:pink;
+}
+#info2
+{
+position:absolute;
+left:920px;
+top:130px;
+width:100px;
+height:100px;
+background-color:pink;
+}
+#info3
+{
+position:absolute;
+left:920px;
+top:240px;
+width:100px;
+height:100px;
+background-color:pink;
+}*/
+#reel
+{
+position:relative;
+float:left;
+width:300px;
+height:600px;
+background: url(http://marian.moskovko.com/slots/reel4.png);
+}
+.reelClass
+{
+position:relative;
+float:left;
+width:300px;
+height:600px;
+background: url(http://marian.moskovko.com/slots/reel4.png);
+}
+</style>
+
+<!--SLOTS SCRIPT-->
+<script type="text/javascript">
+
+/*function increment()
+	{speed++;
+	}
+function decrement()
+	{speed--;
+	}
+BUTTONS-NO LONGER USEFUL*/
+
+
+
+var linesPlayed = 1;
+var creditsPlayed = 1;
+var totalBet = linesPlayed * creditsPlayed;
+
+
+
+
+
+
+
+
+
+var sCounter	= 0;
+var xscroll	= 0;
+var speed 	= 0;
+var outcome 	= 0;
+var ready1 	= 0;
+
+var sCounter2	= 0;
+var xscroll2	= 0;
+var speed2	= 0;
+var outcome2	= 0;
+var ready2	= 0;
+
+var sCounter3	= 0;
+var xscroll3	= 0;
+var speed3	= 0;
+var outcome3	= 0;
+var ready3	= 0;
+
+var reel 	= new Array();
+var reel2 	= new Array();
+var reel3 	= new Array();
+
+var outcomePosition = 0;
+var outcomePosition2 = 0;
+var outcomePosition3 = 0;
+
+var parsedResponse = new Object();
+
+function increaseBet()
+	{
+	if (creditsPlayed < 5)
+		{creditsPlayed++;$('#infoCredits').html('CREDITS/LINE : ' + creditsPlayed);}
+	}
+function decreaseBet()
+	{
+	if (creditsPlayed > 1)
+		{creditsPlayed--;$('#infoCredits').html('CREDITS/LINE : ' + creditsPlayed);}
+	}
+function increaseLines()
+	{
+	if (linesPlayed < 5)
+		{linesPlayed++;$('#infoLines').html('LINES : ' + linesPlayed);}
+	}
+function decreaseLines()
+	{
+	if (linesPlayed > 1)
+		{linesPlayed--;$('#infoLines').html('LINES : ' + linesPlayed);}
+	}
+function betMax()
+	{
+	linesPlayed = 5;$('#infoLines').html('LINES : ' + linesPlayed);
+	creditsPlayed = 5;$('#infoCredits').html('CREDITS/LINE : ' + creditsPlayed);
+	checkRequest('action');
+	}
+function defineReels()
+	{	//will be different eventually
+	reel  = ["e","b1","b2","e","b3","e","e","b2","e","b","e","7","e","e","b3","e","b2","e","7","b3"];
+	reel2 = ["e","b1","b2","e","b3","e","e","b2","e","b","e","7","e","e","b3","e","b2","e","7","b3"];
+	reel3 = ["e","b1","b2","e","b3","e","e","b2","e","b","e","7","e","e","b3","e","b2","e","7","b3"];
+	return;
+	}
+function generateOutcome()
+	{
+/*	outcome = Math.floor(Math.random()*20)*200;
+	outcome2 = Math.floor(Math.random()*20)*200;
+	outcome3 = Math.floor(Math.random()*20)*200;
+	outcomePosition = outcome/200;
+	outcomePosition2 = outcome2/200;
+	outcomePosition3 = outcome3/200;
+*/	
+	outcomePosition = parseInt(parsedResponse.first);
+	outcomePosition2 =  parseInt(parsedResponse.second);
+	outcomePosition3 =  parseInt(parsedResponse.third);
+	outcome = parsedResponse.first*200;
+	outcome2 = parsedResponse.second*200;
+	outcome3 = parsedResponse.third*200;
+	defineReels();
+//	evaluateOutcome();
+	return;
+	}
+
+function evaluateOutcome()
+	{if(parsedResponse.message1 != "Nothing."){alert(parsedResponse.message1);}
+/*		NOW ON BACK END, JUST NEED TO READ THE MESSAGE ^
+	var landMatrix = new Array(); // COLUMN X ROW
+	var payline1 = 0;
+	var payline2 = 0;
+	var payline3 = 0;
+	var payline4 = 0;
+	var payline5 = 0;
+	lt = reel[outcomePosition+1];
+	lm = reel[outcomePosition];
+	lb = reel[outcomePosition-1];
+	ct = reel[outcomePosition2+1];
+	cm = reel[outcomePosition2];
+	cb = reel[outcomePosition2-1];
+	rt = reel[outcomePosition3+1];
+	rm = reel[outcomePosition3];
+	rb = reel[outcomePosition3-1];
+	
+	if (lm==cm&&cm==rm)
+		{if (lm!="e")
+		{alert("hit on middle line!!!");}
+		}
+	if (lt==cm&&cm==rb)
+		{if (lt!="e")
+		{alert("hit on left top to right bottom!!!");}
+		}
+	if (lb==cm&&cm==rt)
+		{if (lb!="e")
+		{alert("hit on left bottom to top right!!!");}
+		}
+	if (lt==ct&&ct==rt)
+		{if (lt!="e")
+		{alert("hit on top line!!!");}
+		}
+	if (lb==cb&&cb==rb)
+		{if (lb!="e")
+		{alert("hit on bottom line!!!");}
+		}
+*/
+
+
+
+//	alert("right bottom is " + rb);
+/*	landMatrix[0][1] = reel[outcomePosition];
+	landMatrix[0][2] = reel[outcomePosition-1];
+	landMatrix[1][0] = reel2[outcomePosition2+1];
+	landMatrix[1][1] = reel2[outcomePosition2];
+	landMatrix[1][2] = reel2[outcomePosition2-1];
+	landMatrix[2][0] = reel3[outcomePosition3+1];
+	landMatrix[2][1] = reel3[outcomePosition3];
+	landMatrix[2][2] = reel3[outcomePosition3-1];
+*/	return;
+	}		/*
+function outcomeUpdate()
+	{			NO LONGER NEEDED OUTCOME INPUTS
+	outcome = (parseInt(document.getElementById('outcomeInput').value))*200;
+	outcome2 = (parseInt(document.getElementById('outcomeInput2').value))*200;
+	outcome3 = (parseInt(document.getElementById('outcomeInput3').value))*200;
+	}		*/
+function launchReels()
+	{document.getElementById("launch").style.visibility="hidden";
+	generateOutcome();
+	spinReel();
+	spinReel2();
+	spinReel3();
+	}
+//		will have different functions eventually
+function scroll()
+	{
+	var distance = outcome-xscroll;
+	if (distance<0)
+		{distance+=4000;}
+	sCounter+=speed;
+	if(sCounter>4000&&distance>900)
+		{clearInterval(startInterval);
+		sCounter=0;
+		landReel();	
+		}	
+	xscroll = xscroll+speed;
+	document.getElementById("reel").style.background= "url(http://marian.moskovko.com/slots/reel4.png) 0 " + xscroll + "px";
+	if (xscroll>=4000)
+		{xscroll=0;}
+	document.getElementById("info").innerHTML=(xscroll/200).toString();
+	}
+function scroll2()
+	{
+	var distance = outcome2-xscroll2;
+	if (distance<0)
+		{distance+=4000;}
+	sCounter2+=speed2;
+	if(ready1==1&&distance>900)
+		{clearInterval(startInterval2);
+		sCounter2=0;
+		landReel2();	
+		}	
+	xscroll2 = xscroll2+speed2;
+	document.getElementById("reel2").style.background= "url(http://marian.moskovko.com/slots/reel4.png) 0 " + xscroll2 + "px";
+	if (xscroll2>=4000)
+		{xscroll2=0;}
+	document.getElementById("info2").innerHTML=(xscroll2/200).toString();
+	}
+function scroll3()
+	{
+	var distance = outcome3-xscroll3;
+	if (distance<0)
+		{distance+=4000;}
+	sCounter3+=speed3;
+	if(ready2==1&&distance>900)
+		{clearInterval(startInterval3);
+		sCounter3=0;
+		landReel3();	
+		}	
+	xscroll3 = xscroll3+speed3;
+	document.getElementById("reel4").style.background= "url(http://marian.moskovko.com/slots/reel4.png) 0 " + xscroll3 + "px";
+	if (xscroll3>=4000)
+		{xscroll3=0;}
+	document.getElementById("info3").innerHTML=(xscroll3/200).toString();
+	}
+	
+function scrollEnd()
+	{document.getElementById("info").innerHTML=(xscroll/200).toString();
+	var distance = outcome-xscroll;
+	if (distance<0)
+		{distance+=4000;}
+	if (900>distance&&distance>300)
+		{speed=60;}
+	if (300>distance&&distance>150)
+		{speed=30;
+		ready1=1;
+		}
+	if (150>distance&&distance>70)
+		{speed=20;}
+	if (70>distance&&distance>10)
+		{speed=6;}
+	if (10>distance&&distance>0)
+		{speed=2;}
+	if (xscroll==outcome)
+		{clearInterval(endInterval);
+		}
+	xscroll = xscroll+speed;
+	document.getElementById("reel").style.background= "url(http://marian.moskovko.com/slots/reel4.png) 0 " + xscroll + "px";
+	if (xscroll>=4000)
+		{xscroll=0;}
+	}
+function scrollEnd2()
+	{document.getElementById("info2").innerHTML=(xscroll2/200).toString();
+	var distance = outcome2-xscroll2;
+	if (distance<0)
+		{distance+=4000;}
+	if (900>distance&&distance>300)
+		{speed2=60;}
+	if (300>distance&&distance>150)
+		{speed2=30;
+		ready2=1;
+		}
+	if (150>distance&&distance>70)
+		{speed2=20;}
+	if (70>distance&&distance>10)
+		{speed2=6;}
+	if (10>distance&&distance>0)
+		{speed2=2;}
+	if (xscroll2==outcome2)
+		{clearInterval(endInterval2);
+		}
+	xscroll2 = xscroll2+speed2;
+	document.getElementById("reel2").style.background= "url(http://marian.moskovko.com/slots/reel4.png) 0 " + xscroll2 + "px";
+	if (xscroll2>=4000)
+		{xscroll2=0;}
+	}
+function scrollEnd3()
+	{document.getElementById("info3").innerHTML=(xscroll3/200).toString();
+	var distance = outcome3-xscroll3;
+	if (distance<0)
+		{distance+=4000;}
+	if (900>distance&&distance>300)
+		{speed3=60;}
+	if (300>distance&&distance>150)
+		{speed3=30;}
+	if (150>distance&&distance>70)
+		{speed3=20;}
+	if (70>distance&&distance>10)
+		{speed3=6;}
+	if (10>distance&&distance>0)
+		{speed3=2;}
+	if (xscroll3==outcome3)
+		{clearInterval(endInterval3);
+		ready1=0;
+		ready2=0;
+		ready3=0;
+		evaluateOutcome();
+		document.getElementById('launch').style.visibility='visible';
+		document.getElementById('outcomeInput').style.visibility='visible';
+		}
+	xscroll3 = xscroll3+speed3;
+	document.getElementById("reel4").style.background= "url(http://marian.moskovko.com/slots/reel4.png) 0 " + xscroll3 + "px";
+	if (xscroll3>=4000)
+		{xscroll3=0;}
+	}
+
+function landReel()
+	{speed = 180;
+	if(xscroll%2!=0)
+		{xscroll++;}
+	endInterval = setInterval("scrollEnd()",40);
+	}
+function landReel2()
+	{speed2 = 180;
+	if(xscroll2%2!=0)
+		{xscroll2++;}
+	endInterval2 = setInterval("scrollEnd2()",40);
+	}
+function landReel3()
+	{speed3 = 180;
+	if(xscroll3%2!=0)
+		{xscroll3++;}
+	endInterval3 = setInterval("scrollEnd3()",40);
+	}
+function spinReel()
+	{speed=180;
+	sCounter=0;
+	startInterval = setInterval("scroll()",40);
+	}
+function spinReel2()
+	{speed2=180;
+	sCounter2=0;
+	startInterval2 = setInterval("scroll2()",40);
+	}
+function spinReel3()
+	{speed3=180;
+	sCounter3=0;
+	startInterval3 = setInterval("scroll3()",40);
+	}
+
+</script>
+
+
+
+
+
+
+
+
+
+<meta charset="utf-8" />
+
+
+<script type="text/javascript">
+function checkRequest(reqType)
+	{
+	if (reqType == 'login')
+		{
+//		alert($('#form').val().length);	
+		if   ($('#form').val().length < 6 || $('#form').val().length > 14)
+			{$('input').css('background-color','white');
+			$('#form').css('background-color','red');
+			$('#result').html('*Username must be between 6 and 14 characters');
+			}
+		else
+			{sendRequest(reqType);
+			$('input').css('background-color','white');
+			}
+		}
+	if (reqType == 'create')
+		{
+		if ($('#newPass').val() == $('#newPass2').val() &&
+			$('#newUser').val().length > 5 &&
+			$('#newUser').val().length < 15 &&
+			/^.+@.+\..+$/.test($('#newMail').val()))
+			{sendRequest(reqType);
+			}
+		else 
+			{if ($('#newPass').val() != $('#newPass2').val())
+				{$('input').css('background-color','white');
+				$('#result').html('Your 2 password fields don\'t match');
+				$('#newPass').css('background-color','red');
+				$('#newPass2').css('background-color','red');
+				return;
+				}
+			if 	($('#newUser').val().length < 6 || $('#newUser').val().length > 14)
+				{$('input').css('background-color','white');
+				$('#result').html('User name must be between 6 and 14 characters');
+				$('#newUser').css('background-color','red');
+				return;
+				}
+			if (!/^.+@.+\..+$/.test($('#newMail').val()))
+				{$('input').css('background-color','white');
+				$('#result').html('Your e-mail address appears invalid');
+				$('#newMail').css('background-color','red');
+				return;
+				}
+			}
+		}
+	if (reqType == 'action')
+		{
+		sendRequest(reqType);		
+		}
+	}
+function sendRequest(reqType){
+		if (reqType == 'login')
+			{
+			var userName = document.getElementById('form').value;
+			var passCode = document.getElementById('pass').value;
+			}
+		if (reqType == 'action')
+			var sessionCookie = document.cookie.substring(document.cookie.indexOf('sessionID')+10 , document.cookie.length);
+//			alert('bet size: ' + creditsPlayed);
+		if (reqType == 'create')
+			{
+			var email = $('#newMail').val();
+			var userName = $('#newUser').val();
+			var passCode = $('#newPass').val();
+			alert(email);
+			}
+		if ($('#newPass').val() == $('#newPass2').val() || reqType == 'login' || reqType == 'action'){
+	    			$.ajax({
+		        		url: 'http://127.0.0.1:8888/sloboz',
+				        dataType: "jsonp",			// TO OVERRIDE SAME DOMAIN RESTRICTION
+					data: { 'username' : userName ,
+						'password' : passCode ,
+						'type' : reqType,
+						'sessionId' : sessionCookie,
+						'email' : email, 
+						'creditsPlayed' : creditsPlayed.toString(),
+						'linesPlayed' : linesPlayed.toString(),},
+		      	 		jsonpCallback: "_testcb",
+					cache: false,
+				        timeout: 10000,
+			   	        success: function(data){
+						processResult(data, reqType);
+			        		},
+			        	error: function(jqXHR, textStatus, errorThrown) {
+			            		alert('error ' + textStatus + " " + errorThrown);
+	        				}
+	    			});
+			}
+		}		
+		
+</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript">
+
+var sessionID;
+var type;
+var requestData;
+function processResult(data,type)
+	{
+//	requestDate = '';
+//	alert('Type of request processed : ' + type);
+//	sessionID = data;
+	if (/"/.test(data))
+		{parsedResponse = JSON.parse(data);
+//		alert('from parsed response: ' + parsedResponse.sessionID);
+//		alert('message from parsed response : ' + parsedResponse.message);
+//		alert('First number : ' + parsedResponse.first + '\nSecond: ' + parsedResponse.second + '\nThird: ' + parsedResponse.third);
+		$('#result').html(parsedResponse.message);
+		var today = new Date();
+		var expires = new Date();
+		expires.setTime(today.getTime() + 6000);
+		document.cookie = "sessionID=" + parsedResponse.sessionID + ";expires:" + expires.toGMTString();
+		sessionCookie = document.cookie.substring(document.cookie.indexOf('sessionID')+10 , document.cookie.length);
+		setTimeout(function(){document.cookie = "sessionID=_";}, 60000);
+		if (type == 'action')
+			{launchReels();}
+//		alert('session cookie set to : ' + sessionCookie);
+		}
+	else 	{
+		var result = document.getElementById('result');
+		result.innerHTML = data;
+		}
+	}
+
+function showSession()
+	{
+	$('#result').html('Cached response from server : ' + sessionID); 
+	}
+
+$(document).ready(function(){
+var today = new Date();
+//alert(today.toGMTString());
+var inOneMin = new Date();
+inOneMin.setTime(today.getTime() + 60000);
+//alert(inOneMin.toGMTString());
+
+//document.cookie = "sessionID = 123456;expires:" + inOneMin.toGMTString();
+//alert(' cookie : ' + document.cookie.substring(document.cookie.indexOf('sessionID')+10 , document.cookie.length));
+
+
+//alert(document.cookie);
+});
+function scale()
+	{
+	container.style.zoom = '90%';
+	$("#container").css('-moz-transform','scale(0.90)');
+	}
+
+</script>
+</head>
+
+
+
+<body>
+<div id="login">
+	</br>
+	Username<input style="width:100px" id="form" type="text"></input><br/>
+	Password<input style="width:100px" id="pass" type="text"></input>
+	<p style="text-align:center"><button style="border-radius:5px;" onclick="checkRequest('login')">LOGIN</button></p>
+	<p style="text-align:center">-OR-</p>
+	Username<input style="width:100px" id="newUser" type="text"></input><br/>
+	Password<input style="width:100px" id="newPass" type="text"></input><br/>
+	Re-enter<input style="width:100px" id="newPass2" type="text"></input><br/>
+	Email<input style="width:100px" id="newMail" type="text"></input><br/>
+	<button onclick="checkRequest('create')">CREATE NEW USER</button>	
+	<button onclick="checkRequest('action')">PULL SOME INFO</button>
+	<!--button onclick="showSession()">Show session ID</button-->
+	<!--button onclick="$('#APP').css('visibility','visible')">show app</button>	
+	<button onclick="$('#APP').css('visibility','hidden')">hide app</button-->	
+<div id="result">
+</div>
+</div>
+<div id="APP">
+</div>	
+<div id="container">
+	<div id="reel" class="reelClass">
+	</div>
+	<div id="reel2" class="reelClass">
+	</div>
+	<div id="reel4" class="reelClass">
+	</div>
+
+	<!--button type="button" onclick=increment()>accel+</button>  NO LONGER NEEDED
+	<button type="button" onclick=decrement()>accel-</button-->
+
+	
+	<div id="info"></div>
+	<div id="info2"></div>
+	<div id="info3"></div>
+
+	<!--div id="outcomeDiv"> NO LONGER NEEDED
+		<input value="Enter first landing position (0-19)" onclick="this.select()" size="70" type="text" onchange="outcomeUpdate()" id="outcomeInput"></input>
+		<input value="Enter second landing position (0-19)" onclick="this.select()" size="70" type="text" onchange="outcomeUpdate()" id="outcomeInput2"></input>
+		<input value="Enter third landing position (0-19)" onclick="this.select()" size="70" type="text" onchange="outcomeUpdate()" id="outcomeInput3"></input>
+	</div-->
+</div>
+<div id="status">
+	<div class="controlButton">CREDITS: 500</div>
+	<div id="infoLines" class="controlButton">LINES : 1</div>
+	<div id="infoCredits" class="controlButton">CREDITS/LINE: 1</div>
+	<div class="controlButton">TOTAL BET : 1</div>
+	<div class="controlButton"></div>
+</div>
+<div id="controls">
+	<button class="controlButton" type="button" onclick="increaseBet()">BET+</button>
+	<button class="controlButton" type="button" onclick="decreaseBet()">BET-</button>
+	<button class="controlButton" type="button" onclick="increaseLines()">LINES+</button>
+	<button class="controlButton" type="button" onclick="decreaseLines()">LINES-</button>
+	<button class="controlButton" id="launch" type="button" onclick="checkRequest('action')">SPIN</button>
+	<button class="controlButton" type="button" onclick="betMax()">BET MAX</button>
+</div>
+</body>
+</html>
